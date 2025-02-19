@@ -1,0 +1,15 @@
+{
+  "host": "localhost",
+  "port": 25565,
+  "username": "beta",
+  "version": false,
+  "plugins": {
+    "pathfinder": {
+      "enabled": true
+    },
+
+    "ChatLogger": {
+      "enabled": true
+    }
+  }
+}
