@@ -43,14 +43,14 @@ export class PathfinderManager {
   }
 
   /** Move o bot para coordenadas específicas */
-  private goTo({ x, y, z }: { x: number; y: number; z: number }) {
+  public goTo({ x, y, z }: { x: number; y: number; z: number }) {
     if (!this.bot.pathfinder) return console.log("Pathfinder não carregado");
     this.bot.chat(`Indo para X=${x}, Y=${y}, Z=${z}`);
     this.bot.pathfinder.setGoal(new goals.GoalBlock(x, y, z));
   }
 
   /** Seguir jogador */
-  private followPlayer({ username }: { username: string }) {
+  public followPlayer({ username }: { username: string }) {
     const player = this.bot.players[username]?.entity;
     if (!player) {
       this.bot.chat(`Não consigo ver ${username}!`);
@@ -65,7 +65,7 @@ export class PathfinderManager {
   }
 
   /** Para qualquer movimento autal */
-  private stop() {
+  public stop() {
     if (!this.bot.pathfinder)
       return Logger.log("info", "pathfinder", "Plugin não foi carregado");
     this.bot.chat("Parando...");
@@ -88,6 +88,10 @@ export class PathfinderManager {
         'Estratégia de movimento "${name}" não encontrada.',
       );
     }
+  }
+
+  public isPathfinderLoaded(): boolean {
+    return !!this.bot.pathfinder
   }
 }
 

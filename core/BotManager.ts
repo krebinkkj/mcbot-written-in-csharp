@@ -23,11 +23,14 @@ export class BotManager {
     });
 
     this.bot.once("login", () => {
-      Logger.log("info", "BotManager", `Bot Iniciado, carregando plugins...`);
+      Logger.log("core", "BotManager", `Bot Iniciado, carregando plugins...`);
+      this.commandManager.listenForCommands()
+      this.pluginManager.loadPlugins()
     });
 
-    this.commandManager = new CommandManager(this.bot);
+    this.commandManager = new CommandManager(this.bot)
     this.pluginManager = new PluginManager(this.bot);
+
 
     this.bot.on("error", (err) => {
       Logger.log("info", "BotManager", `${err}`);
@@ -35,12 +38,6 @@ export class BotManager {
 
     this.bot.on("end", () => {
       Logger.log("info", "BotManager", "Bot desconectado");
-    });
-  }
-
-  public start() {
-    this.commandManager.registerCommand("ping", (_, bot) => {
-      bot.chat("Pong");
     });
   }
 }

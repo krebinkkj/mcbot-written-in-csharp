@@ -32,14 +32,14 @@ export class Logger {
     if (!fs.existsSync(logFilePath)) {
       fs.writeFileSync(
         logFilePath,
-        `Log iniciado em: ${this.formatTimestamp()}\n\n`,
+        `### Log iniciado em: ${this.formatTimestamp()}\n\n`,
       );
     }
   }
 
   // Função para registrar no terminal e no arquivo
   static log(
-    level: "info" | "error" | "warn" | "debug",
+    level: "info" | "error" | "warn" | "debug" | "sucess" | "core",
     source: string,
     message: string,
     param?: any,
@@ -65,6 +65,12 @@ export class Logger {
       case "debug":
         levelColor = chalk.magenta.bold(level.toUpperCase());
         break;
+      case "sucess":
+        levelColor = chalk.greenBright.bold(level.toUpperCase());
+        break;
+      case "core":
+        levelColor = chalk.cyanBright.bold(level.toUpperCase());
+      break;
       default:
         levelColor = chalk.white.bold(level);
         break;

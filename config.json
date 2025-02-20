@@ -9,7 +9,11 @@
     },
 
     "ChatLogger": {
-      "enabled": true
+      "enabled": false
+    },
+    
+    "AutoAnswer": {
+        "enabled": true
     }
   }
 }

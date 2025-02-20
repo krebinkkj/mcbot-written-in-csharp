@@ -1,70 +1,65 @@
 import { Bot } from "mineflayer";
-import * as fs from "fs";
-import * as path from "path";
-import * as configData from "../config.json";
+import * as fs from 'fs'
+import * as path from 'path'
 import { Logger } from "./LogManager";
-import chalk from "chalk";
+import configData from '../config.json'
 
 export class PluginManager {
-  private bot: Bot;
-  private config: any;
+  private bot: Bot
+  private config: any
+  private loadedPlugins: Set<string>
 
   constructor(bot: Bot) {
-    this.bot = bot;
+    this.bot = bot
     this.config = configData.plugins || {};
+    this.loadedPlugins = new Set()
+  }
 
-    this.bot.once("spawn", () => {
-      this.loadPlugins();
+  public loadPlugins() {
+    const pluginsDir = path.join(__dirname, '../plugins')
+
+    // Verifica se o diretório de plugins existe
+    if (!fs.existsSync(pluginsDir)) {
+      fs.mkdirSync(pluginsDir, { recursive: true })
+    }
+
+    // Lê todos os arquivos de plugins na pasta plugins
+    const pluginFiles = fs.readdirSync(pluginsDir).filter((file) => file.endsWith('.ts'))
+
+    pluginFiles.forEach((file) => {
+      const pluginName = file.replace('.ts', '') // Remover a extensão .ts
+
+      // Verifica se o plugin já foi carregado
+      if (this.isPluginLoaded(pluginName)) {
+        Logger.log(`info`, 'PluginManager', `O plugin ${pluginName} já foi carregado`)
+        return
+      }
+
+      // Verfica se o plugin está desativado (caso exista no arquivo de configuração)
+      if (this.config[pluginName]?.enabled === false) {
+        Logger.log('info', 'PluginManager', `O plugin ${pluginName} está desativado`)
+        return
+      }
+
+      const pluginPath = path.join(pluginsDir, file)
+
+      try {
+        // Carrega o plugin
+        const plugin = require(pluginPath)
+
+        plugin.default(this.bot)
+
+        // Marca o plugin como carregado
+        this.loadedPlugins.add(pluginName)
+        Logger.log('info', 'PluginManager', `O plugin ${pluginName} foi carregado`)
+      } catch (error) {
+        Logger.log(`error`, 'PluginManager', `Erro ao carregado o plugin ${pluginName}: ${error}`)
+      }
     });
   }
 
-  public async loadPlugins() {
-    const pluginsDir = path.join(__dirname, "../plugins");
-    if (!fs.existsSync(pluginsDir)) {
-      fs.mkdirSync(pluginsDir, { recursive: true });
-    }
-
-    const pluginFiles = fs
-      .readdirSync(pluginsDir)
-      .filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
-
-    for (const file of pluginFiles) {
-      const pluginName = file.replace(/\.(ts|js)$/, "");
-
-      if (this.config[pluginName]?.enabled === false) {
-        Logger.log(
-          "info",
-          "PluginManager",
-          `Plugin ${pluginName} está desativado.`,
-        );
-        continue;
-      }
-
-      const pluginPath = path.join(pluginsDir, file);
-      try {
-        const pluginModule = await import(pluginPath);
-
-        if (pluginModule.default) {
-          pluginModule.default(this.bot);
-          Logger.log(
-            "info",
-            "PluginManager",
-            `O plugin ${pluginName} foi carregado!`,
-          );
-        } else {
-          Logger.log(
-            "info",
-            "PluginManager",
-            `${pluginName} não exporta um plugin válido `,
-          );
-        }
-      } catch (error) {
-        Logger.log(
-          "error",
-          "PluginManager",
-          `Erro no ${pluginName}:\n ${error}`,
-        );
-      }
-    }
+  // Função para verificar se o plugin já foi carregado
+  public isPluginLoaded(pluginName: string): boolean {
+    return this.loadedPlugins.has(pluginName)
   }
 }
