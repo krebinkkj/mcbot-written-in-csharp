@@ -70,7 +70,7 @@ export class Logger {
         break;
       case "core":
         levelColor = chalk.cyanBright.bold(level.toUpperCase());
-      break;
+        break;
       default:
         levelColor = chalk.white.bold(level);
         break;

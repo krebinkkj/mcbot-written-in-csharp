@@ -11,9 +11,9 @@
     "ChatLogger": {
       "enabled": false
     },
-    
+
     "AutoAnswer": {
-        "enabled": true
+      "enabled": true
     }
   }
 }

@@ -91,7 +91,7 @@ export class PathfinderManager {
   }
 
   public isPathfinderLoaded(): boolean {
-    return !!this.bot.pathfinder
+    return !!this.bot.pathfinder;
   }
 }
 
